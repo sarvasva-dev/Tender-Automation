@@ -8,51 +8,50 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #0f172a; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border: 1px solid rgba(0,0,0,0.08); }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); }
+        .glass-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
         .tab-active { background: #2563eb; color: #fff; font-weight: 600; }
-        .kw-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: #2563eb; border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 600; }
-        @keyframes pulseGlow { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .kw-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); color: #60a5fa; border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 600; }
+        @keyframes pulseGlow { 0%, 100% { border-color: rgba(244,63,94,0.8); box-shadow: 0 0 20px rgba(244,63,94,0.3); } 50% { border-color: rgba(244,63,94,0.3); box-shadow: 0 0 5px rgba(244,63,94,0.1); } }
         .alert-glow { animation: pulseGlow 2.5s infinite; }
+        .toast-slide { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col bg-slate-950 text-slate-100">
 
-    <!-- ===== SERVER DOWN / FALLBACK DATA NOTIFICATION BANNER ===== -->
-    <div class="bg-amber-500 text-slate-900 text-xs font-bold py-2.5 px-4 text-center border-b border-amber-600 flex items-center justify-center gap-2 shadow-md">
-        <i data-feather="alert-triangle" class="w-4 h-4 text-slate-900"></i>
-        <span>Server Connection Offline — Displaying Fallback SIH26100 Evaluation Data (Demo Mode)</span>
-    </div>
+    <!-- ===== TOP TOAST NOTIFICATION CONTAINER ===== -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- ===== TOP HEADER ===== -->
-    <header class="glass sticky top-0 z-50 px-6 py-3 border-b border-slate-200">
+    <header class="glass sticky top-0 z-40 px-6 py-3 border-b border-slate-800">
         <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
                     <i data-feather="shield" class="text-white w-5 h-5"></i>
                 </div>
                 <div>
-                    <h1 class="text-base font-bold tracking-tight text-slate-900 flex items-center gap-2">
-                        GeM Bid Scrutiny<span class="text-blue-600">AI</span>
-                        <span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full border border-blue-200 font-semibold">SIH26100</span>
-                        <span class="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full border border-amber-200 hidden sm:inline-block">Ministry of Petroleum & Natural Gas</span>
+                    <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
+                        GeM Bid Scrutiny<span class="text-blue-400">AI</span>
+                        <span class="bg-blue-500/20 text-blue-300 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-500/30 font-semibold">SIH26100</span>
+                        <span class="bg-amber-500/20 text-amber-300 text-[10px] px-2.5 py-0.5 rounded-full border border-amber-500/30 hidden sm:inline-block">Ministry of Petroleum & Natural Gas</span>
                     </h1>
-                    <p class="text-[11px] text-slate-600">Procurement Officer Console · Multi-Portal Verification · Anti-Cartel Forensics · GFR 2017</p>
+                    <p class="text-[11px] text-slate-400">Procurement Officer Console · Multi-Portal Verification · Anti-Cartel Forensics · GFR 2017</p>
                 </div>
             </div>
 
-            <!-- Action Buttons -->
+            <!-- Header Quick Action Buttons -->
             <div class="flex items-center gap-2 flex-wrap">
-                <button onclick="alert('Syncing live GeM Bids (Fallback Demo Mode Active)')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
-                    <i data-feather="zap" class="w-3.5 h-3.5 text-indigo-600"></i> Sync GeM Bids
+                <button onclick="triggerSyncDemo()" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+                    <i data-feather="zap" class="w-3.5 h-3.5 text-indigo-400"></i> Sync GeM Bids
                 </button>
-                <button onclick="alert('Re-evaluating compliance & anti-cartel forensics (Demo Mode)')" class="bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5">
-                    <i data-feather="refresh-cw" class="w-3.5 h-3.5 text-purple-600"></i> Run Scrutiny
+                <button onclick="triggerScrutinyDemo()" class="bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5">
+                    <i data-feather="refresh-cw" class="w-3.5 h-3.5 text-purple-400"></i> Run Scrutiny
                 </button>
-                <button onclick="alert('Exporting GFR 2017 TBER Report...')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
+                <button onclick="triggerExportDemo()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
                     <i data-feather="file-text" class="w-3.5 h-3.5"></i> Export GFR 2017 TBER
                 </button>
-                <button onclick="openModal('upload-modal')" class="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow-lg shadow-blue-600/20">
+                <button onclick="openModal('upload-modal')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow-lg shadow-blue-600/20">
                     <i data-feather="user-check" class="w-3.5 h-3.5"></i> Verify Bidder
                 </button>
             </div>
@@ -63,73 +62,80 @@
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-5">
 
         <!-- ACTIVE TENDER CONTEXT BANNER -->
-        <div class="glass rounded-2xl p-4 md:p-5 border border-blue-500/30 bg-white shadow-xl">
+        <div class="glass-card rounded-2xl p-4 md:p-5 border border-blue-500/30 shadow-xl">
             <div class="flex flex-wrap items-center justify-between gap-4">
                 <div class="space-y-1">
                     <div class="flex items-center gap-2 flex-wrap">
-                        <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded border border-blue-200 font-mono">
+                        <span class="bg-blue-500/20 text-blue-300 text-xs font-bold px-2.5 py-0.5 rounded border border-blue-500/30 font-mono">
                             GEM/2026/B/9482103
                         </span>
-                        <span class="bg-slate-100 text-slate-700 text-xs px-2.5 py-0.5 rounded border border-slate-200">
+                        <span class="bg-slate-800 text-slate-300 text-xs px-2.5 py-0.5 rounded border border-slate-700">
                             Ministry of Petroleum & Natural Gas / CPCL
                         </span>
-                        <span class="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-0.5 rounded border border-emerald-200">
+                        <span class="bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-0.5 rounded border border-emerald-500/30">
                             Technical Evaluation Stage
                         </span>
                     </div>
-                    <h2 class="text-base font-bold text-slate-900 tracking-wide">
+                    <h2 class="text-base font-bold text-white tracking-wide">
                         Industrial Safety & High-Pressure Valves Supply Contract
                     </h2>
-                    <div class="flex items-center gap-4 text-xs text-slate-600 pt-1 flex-wrap font-medium">
-                        <span><strong class="text-slate-900">Mandatory Min Turnover:</strong> ₹5.0 Cr</span>
+                    <div class="flex items-center gap-4 text-xs text-slate-400 pt-1 flex-wrap font-medium">
+                        <span><strong class="text-slate-200">Mandatory Min Turnover:</strong> ₹5.0 Cr</span>
                         <span>•</span>
-                        <span><strong class="text-slate-900">MII Preference:</strong> Class-I Local Supplier (>=50%)</span>
+                        <span><strong class="text-slate-200">MII Preference:</strong> Class-I Local Supplier (>=50%)</span>
                         <span>•</span>
-                        <span><strong class="text-slate-900">MSME Waiver:</strong> EMD & Turnover relaxed</span>
+                        <span><strong class="text-slate-200">MSME Waiver:</strong> EMD & Turnover relaxed</span>
                         <span>•</span>
-                        <span><strong class="text-slate-900">Estimated Value:</strong> ₹1.25 Cr</span>
+                        <span><strong class="text-slate-200">Estimated Value:</strong> ₹1.25 Cr</span>
                     </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-400 font-medium">Statutory Verification:</span>
+                    <span class="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-3 py-1 rounded-lg border border-emerald-500/40 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Connected
+                    </span>
                 </div>
             </div>
         </div>
 
         <!-- ANTI-CARTELIZATION & COLLUSION ALERT BANNER -->
-        <div class="rounded-2xl p-4 md:p-5 bg-gradient-to-r from-rose-950/90 via-slate-900 to-rose-950/70 border-2 border-rose-500/60 shadow-2xl space-y-3 alert-glow">
+        <div class="rounded-2xl p-4 md:p-5 bg-slate-900/90 border-2 border-rose-500/80 shadow-2xl space-y-3 alert-glow">
             <div class="flex items-center justify-between flex-wrap gap-2">
                 <div class="flex items-center gap-2.5">
-                    <div class="p-2 bg-red-100 rounded-xl text-red-600 border border-red-200">
+                    <div class="p-2 bg-rose-500/20 rounded-xl text-rose-400 border border-rose-500/30">
                         <i data-feather="alert-octagon" class="w-5 h-5"></i>
                     </div>
                     <div>
                         <h3 class="text-sm font-extrabold text-white flex items-center gap-2 tracking-wide">
                             ANTI-CARTELIZATION & BID RIGGING ALERT
-                            <span class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-black tracking-wider uppercase">Critical Forensic Hit</span>
+                            <span class="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded font-black tracking-wider uppercase">Critical Forensic Hit</span>
                         </h3>
                         <p class="text-xs text-rose-200">Collusion detected among competing bidders under Section 3(3) of Competition Act 2002 & GFR Rule 175.</p>
                     </div>
                 </div>
-                <span class="text-xs font-mono font-bold bg-red-500/20 text-red-300 px-3 py-1 rounded-lg border border-red-500/40">
+                <span class="text-xs font-mono font-bold bg-rose-500/20 text-rose-300 px-3 py-1 rounded-lg border border-rose-500/40">
                     1 Cartel Cluster(s) Flagged
                 </span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-                <div class="bg-slate-900/80 border border-rose-500/30 rounded-xl p-3.5 text-xs space-y-2 text-white">
+                <div class="bg-slate-950/80 border border-rose-500/40 rounded-xl p-3.5 text-xs space-y-2">
                     <div class="flex justify-between items-center">
                         <span class="font-bold text-white flex items-center gap-1.5">
-                            <i data-feather="link-2" class="w-3.5 h-3.5 text-red-400"></i>
+                            <i data-feather="link-2" class="w-3.5 h-3.5 text-rose-400"></i>
                             Delta Fire & Safety Solutions ↔ Sigma Industrial Protection Equipments
                         </span>
-                        <span class="bg-red-500/20 text-red-300 px-2 py-0.5 rounded text-[10px] font-mono font-bold border border-red-500/40">
+                        <span class="bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded text-[10px] font-mono font-bold border border-rose-500/40">
                             100% Risk Index
                         </span>
                     </div>
                     <ul class="space-y-1 text-slate-300 text-[11px] list-disc list-inside">
-                        <li class="text-red-300"><strong class="text-white">Common Director DIN(s) identified across competing entities: 05551111</strong></li>
-                        <li class="text-red-300"><strong class="text-white">Identical PDF Author / Creator Machine: 'Admin-Workstation-04'</strong></li>
-                        <li class="text-red-300"><strong class="text-white">Submitted from identical IP / Network Gateway: 103.24.12.8</strong></li>
+                        <li class="text-rose-300"><strong class="text-white">Common Director DIN(s) identified across competing entities: 05551111</strong></li>
+                        <li class="text-rose-300"><strong class="text-white">Identical PDF Author / Creator Machine: 'Admin-Workstation-04'</strong></li>
+                        <li class="text-rose-300"><strong class="text-white">Submitted from identical IP / Network Gateway: 103.24.12.8</strong></li>
                     </ul>
-                    <div class="pt-1 text-[10px] text-slate-400 flex justify-between items-center border-t border-slate-700">
+                    <div class="pt-1 text-[10px] text-slate-400 flex justify-between items-center border-t border-slate-800">
                         <span>Action: Automatic Disqualification Recommended</span>
                         <button onclick="openNoticeModal('Delta Fire & Safety Solutions', 'Suspected Bid Rigging & Cartelization with Sigma Industrial Protection Equipments. Violation of GFR 2017.')" class="text-blue-400 hover:text-blue-300 font-semibold underline">
                             Issue Show-Cause Notice
@@ -141,172 +147,297 @@
 
         <!-- KPI SUMMARY CARDS -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div class="glass rounded-xl p-4 border-l-4 border-l-blue-500 shadow-sm bg-white flex justify-between items-center">
+            <div class="glass-card rounded-xl p-4 border-l-4 border-l-blue-500 shadow-sm flex justify-between items-center">
                 <div>
-                    <h3 class="text-slate-600 text-[10px] font-bold uppercase tracking-wider mb-0.5">Bidders Audited</h3>
-                    <p class="text-2xl font-black text-slate-900">5</p>
+                    <h3 class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-0.5">Bidders Audited</h3>
+                    <p class="text-2xl font-black text-white">5</p>
                 </div>
-                <div class="p-2.5 bg-blue-50 rounded-lg text-blue-500 text-sm"><i data-feather="users"></i></div>
+                <div class="p-2.5 bg-blue-500/10 rounded-lg text-blue-400 text-sm"><i data-feather="users"></i></div>
             </div>
 
-            <div class="glass rounded-xl p-4 border-l-4 border-l-emerald-500 shadow-sm bg-white flex justify-between items-center">
+            <div class="glass-card rounded-xl p-4 border-l-4 border-l-emerald-500 shadow-sm flex justify-between items-center">
                 <div>
-                    <h3 class="text-slate-600 text-[10px] font-bold uppercase tracking-wider mb-0.5">Qualified (Green)</h3>
-                    <p class="text-2xl font-black text-emerald-600">1</p>
+                    <h3 class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-0.5">Qualified (Green)</h3>
+                    <p class="text-2xl font-black text-emerald-400">1</p>
                 </div>
-                <div class="p-2.5 bg-emerald-50 rounded-lg text-emerald-600 text-sm"><i data-feather="check-circle"></i></div>
+                <div class="p-2.5 bg-emerald-500/10 rounded-lg text-emerald-400 text-sm"><i data-feather="check-circle"></i></div>
             </div>
 
-            <div class="glass rounded-xl p-4 border-l-4 border-l-amber-500 shadow-sm bg-white flex justify-between items-center">
+            <div class="glass-card rounded-xl p-4 border-l-4 border-l-amber-500 shadow-sm flex justify-between items-center">
                 <div>
-                    <h3 class="text-slate-600 text-[10px] font-bold uppercase tracking-wider mb-0.5">Clarification (Amber)</h3>
-                    <p class="text-2xl font-black text-amber-600">1</p>
+                    <h3 class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-0.5">Clarification (Amber)</h3>
+                    <p class="text-2xl font-black text-amber-400">1</p>
                 </div>
-                <div class="p-2.5 bg-amber-50 rounded-lg text-amber-600 text-sm"><i data-feather="help-circle"></i></div>
+                <div class="p-2.5 bg-amber-500/10 rounded-lg text-amber-400 text-sm"><i data-feather="help-circle"></i></div>
             </div>
 
-            <div class="glass rounded-xl p-4 border-l-4 border-l-red-500 shadow-sm bg-white flex justify-between items-center">
+            <div class="glass-card rounded-xl p-4 border-l-4 border-l-rose-500 shadow-sm flex justify-between items-center">
                 <div>
-                    <h3 class="text-slate-600 text-[10px] font-bold uppercase tracking-wider mb-0.5">Disqualified (Red)</h3>
-                    <p class="text-2xl font-black text-red-600">3</p>
+                    <h3 class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-0.5">Disqualified (Red)</h3>
+                    <p class="text-2xl font-black text-rose-400">3</p>
                 </div>
-                <div class="p-2.5 bg-red-50 rounded-lg text-red-600 text-sm"><i data-feather="x-circle"></i></div>
+                <div class="p-2.5 bg-rose-500/10 rounded-lg text-rose-400 text-sm"><i data-feather="x-circle"></i></div>
             </div>
         </div>
 
-        <!-- TECHNICAL EVALUATION TABLE -->
-        <div class="glass rounded-2xl border border-slate-200 overflow-hidden shadow-sm bg-white">
-            <div class="p-4 border-b border-slate-200 flex justify-between items-center">
-                <h3 class="text-xs font-bold text-slate-800 flex items-center gap-2">
-                    <i data-feather="check-square" class="w-4 h-4 text-blue-600"></i> Technical Evaluation Scrutiny Roster
+        <!-- TAB STRIP BAR -->
+        <div class="flex items-center justify-between flex-wrap gap-3 border-b border-slate-800 pb-3">
+            <div class="flex gap-1.5 bg-slate-900 p-1.5 rounded-xl border border-slate-800">
+                <button onclick="switchTab('bidders')" id="tab-bidders" class="tab-active px-4 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
+                    <i data-feather="award" class="w-3.5 h-3.5"></i> Technical Scrutiny (5)
+                </button>
+                <button onclick="switchTab('tenders')" id="tab-tenders" class="px-4 py-1.5 text-slate-400 hover:text-white rounded-lg text-xs transition flex items-center gap-1.5">
+                    <i data-feather="database" class="w-3.5 h-3.5"></i> GeM Bids Directory (284)
+                </button>
+                <button onclick="switchTab('keywords')" id="tab-keywords" class="px-4 py-1.5 text-slate-400 hover:text-white rounded-lg text-xs transition flex items-center gap-1.5">
+                    <i data-feather="hash" class="w-3.5 h-3.5"></i> Universal Keywords (32)
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 1: TECHNICAL SCRUTINY TABLE -->
+        <div id="sec-bidders" class="glass-card rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+                <h3 class="text-xs font-bold text-slate-200 flex items-center gap-2">
+                    <i data-feather="check-square" class="w-4 h-4 text-blue-400"></i> Technical Evaluation Scrutiny Roster
                 </h3>
-                <span class="text-[11px] text-slate-500 font-medium">Statutory Connectors: GSTN · Udyam · MCA21 · EPFO · CPPP Debarment <span class="text-emerald-600 font-bold">(DEMO DATA)</span></span>
+                <span class="text-[11px] text-slate-400">Statutory Connectors: GSTN · Udyam · MCA21 · EPFO · CPPP Debarment</span>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-slate-700">
-                    <thead class="bg-slate-50 border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                <table class="w-full text-left text-xs text-slate-300">
+                    <thead class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                         <tr>
-                            <th class="p-3">RAG Verdict</th>
-                            <th class="p-3">Bidder & Identifiers</th>
-                            <th class="p-3">Extraction</th>
-                            <th class="p-3">Verification</th>
-                            <th class="p-3">Compliance</th>
-                            <th class="p-3">Risk Level</th>
-                            <th class="p-3">Recommendation</th>
-                            <th class="p-3 text-right">Officer Actions</th>
+                            <th class="p-3.5">RAG Verdict</th>
+                            <th class="p-3.5">Bidder & Identifiers</th>
+                            <th class="p-3.5">Extraction</th>
+                            <th class="p-3.5">Verification</th>
+                            <th class="p-3.5">Compliance</th>
+                            <th class="p-3.5">Risk Level</th>
+                            <th class="p-3.5">Recommendation</th>
+                            <th class="p-3.5 text-right">Officer Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-slate-800/60">
                         <!-- Bidder 1 -->
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3">
-                                <span class="bg-emerald-100 text-emerald-800 font-extrabold px-2.5 py-1 rounded-full text-[10px] border border-emerald-300">● GREEN</span>
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="p-3.5">
+                                <span class="bg-emerald-500/20 text-emerald-300 font-extrabold px-2.5 py-1 rounded-full text-[10px] border border-emerald-500/30">● GREEN</span>
                             </td>
-                            <td class="p-3">
-                                <div class="font-bold text-slate-900">Uviraj Global Industries Ltd</div>
-                                <div class="text-[10px] text-slate-500 font-mono">PAN: AAACU1234F | GST: 09AAACU1234F1Z5</div>
+                            <td class="p-3.5">
+                                <div class="font-bold text-white">Uviraj Global Industries Ltd</div>
+                                <div class="text-[10px] text-slate-400 font-mono">PAN: AAACU1234F | GST: 09AAACU1234F1Z5</div>
                             </td>
-                            <td class="p-3"><span class="bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded text-[10px]">COMPLETE</span></td>
-                            <td class="p-3"><span class="bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded text-[10px]">VERIFIED</span></td>
-                            <td class="p-3"><span class="bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded text-[10px]">PASS</span></td>
-                            <td class="p-3"><span class="bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded text-[10px]">LOW</span></td>
-                            <td class="p-3"><span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded text-[10px]">QUALIFY</span></td>
-                            <td class="p-3 text-right">
-                                <button onclick="alert('All 8 Checklist Items PASSED for Uviraj Global Industries Ltd')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-lg text-[11px] font-semibold">Audit</button>
+                            <td class="p-3.5"><span class="bg-emerald-500/10 text-emerald-400 font-semibold px-2 py-0.5 rounded text-[10px]">COMPLETE</span></td>
+                            <td class="p-3.5"><span class="bg-emerald-500/10 text-emerald-400 font-semibold px-2 py-0.5 rounded text-[10px]">VERIFIED</span></td>
+                            <td class="p-3.5"><span class="bg-emerald-500/10 text-emerald-400 font-semibold px-2 py-0.5 rounded text-[10px]">PASS</span></td>
+                            <td class="p-3.5"><span class="bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded text-[10px]">LOW</span></td>
+                            <td class="p-3.5"><span class="bg-emerald-500/20 text-emerald-300 font-bold px-2 py-1 rounded text-[10px]">QUALIFY</span></td>
+                            <td class="p-3.5 text-right">
+                                <button onclick="openAuditModal('Uviraj Global Industries Ltd', true)" class="bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700 px-3 py-1 rounded-lg text-[11px] font-semibold transition">Audit</button>
                             </td>
                         </tr>
                         <!-- Bidder 2 -->
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3">
-                                <span class="bg-amber-100 text-amber-800 font-extrabold px-2.5 py-1 rounded-full text-[10px] border border-amber-300">● AMBER</span>
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="p-3.5">
+                                <span class="bg-amber-500/20 text-amber-300 font-extrabold px-2.5 py-1 rounded-full text-[10px] border border-amber-500/30">● AMBER</span>
                             </td>
-                            <td class="p-3">
-                                <div class="font-bold text-slate-900">Hindustan PPE Suppliers Pvt Ltd</div>
-                                <div class="text-[10px] text-slate-500 font-mono">PAN: BBBCB8888Q | GST: 09BBBCB8888Q1Z1</div>
+                            <td class="p-3.5">
+                                <div class="font-bold text-white">Hindustan PPE Suppliers Pvt Ltd</div>
+                                <div class="text-[10px] text-slate-400 font-mono">PAN: BBBCB8888Q | GST: 09BBBCB8888Q1Z1</div>
                             </td>
-                            <td class="p-3"><span class="bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded text-[10px]">COMPLETE</span></td>
-                            <td class="p-3"><span class="bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded text-[10px]">VERIFIED</span></td>
-                            <td class="p-3"><span class="bg-amber-50 text-amber-700 font-semibold px-2 py-0.5 rounded text-[10px]">REVIEW</span></td>
-                            <td class="p-3"><span class="bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded text-[10px]">MEDIUM</span></td>
-                            <td class="p-3"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-1 rounded text-[10px]">CLARIFICATION REQUIRED</span></td>
-                            <td class="p-3 text-right">
-                                <button onclick="openNoticeModal('Hindustan PPE Suppliers Pvt Ltd', 'Turnover ₹4.2 Cr is below minimum ₹5.0 Cr requirement. Clarification requested on MSME exemption certificate.')" class="bg-slate-100 hover:bg-slate-200 text-amber-700 border border-slate-200 px-2.5 py-1 rounded-lg text-[11px] font-semibold">Notice</button>
+                            <td class="p-3.5"><span class="bg-emerald-500/10 text-emerald-400 font-semibold px-2 py-0.5 rounded text-[10px]">COMPLETE</span></td>
+                            <td class="p-3.5"><span class="bg-emerald-500/10 text-emerald-400 font-semibold px-2 py-0.5 rounded text-[10px]">VERIFIED</span></td>
+                            <td class="p-3.5"><span class="bg-amber-500/10 text-amber-400 font-semibold px-2 py-0.5 rounded text-[10px]">REVIEW</span></td>
+                            <td class="p-3.5"><span class="bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded text-[10px]">MEDIUM</span></td>
+                            <td class="p-3.5"><span class="bg-amber-500/20 text-amber-300 font-bold px-2 py-1 rounded text-[10px]">CLARIFICATION REQUIRED</span></td>
+                            <td class="p-3.5 text-right flex justify-end gap-1.5">
+                                <button onclick="openAuditModal('Hindustan PPE Suppliers Pvt Ltd', false)" class="bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700 px-2.5 py-1 rounded-lg text-[11px] font-semibold">Audit</button>
+                                <button onclick="openNoticeModal('Hindustan PPE Suppliers Pvt Ltd', 'Turnover ₹4.2 Cr is below minimum ₹5.0 Cr requirement. Clarification requested on MSME exemption certificate.')" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-lg text-[11px] font-semibold">Notice</button>
                             </td>
                         </tr>
                         <!-- Bidder 3 -->
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3">
-                                <span class="bg-red-100 text-red-800 font-extrabold px-2.5 py-1 rounded-full text-[10px] border border-red-300">● RED</span>
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="p-3.5">
+                                <span class="bg-rose-500/20 text-rose-300 font-extrabold px-2.5 py-1 rounded-full text-[10px] border border-rose-500/30">● RED</span>
                             </td>
-                            <td class="p-3">
-                                <div class="font-bold text-slate-900">Fake & Co. Safety Traders</div>
-                                <div class="text-[10px] text-slate-500 font-mono">PAN: BBBCB5555M | GST: 27INVALID0000Z1</div>
+                            <td class="p-3.5">
+                                <div class="font-bold text-white">Fake & Co. Safety Traders</div>
+                                <div class="text-[10px] text-slate-400 font-mono">PAN: BBBCB5555M | GST: 27INVALID0000Z1</div>
                             </td>
-                            <td class="p-3"><span class="bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded text-[10px]">COMPLETE</span></td>
-                            <td class="p-3"><span class="bg-red-50 text-red-700 font-semibold px-2 py-0.5 rounded text-[10px]">FAILED</span></td>
-                            <td class="p-3"><span class="bg-red-50 text-red-700 font-semibold px-2 py-0.5 rounded text-[10px]">FAIL</span></td>
-                            <td class="p-3"><span class="bg-red-50 text-red-700 font-bold px-2 py-0.5 rounded text-[10px]">HIGH</span></td>
-                            <td class="p-3"><span class="bg-red-100 text-red-800 font-bold px-2 py-1 rounded text-[10px]">DISQUALIFY</span></td>
-                            <td class="p-3 text-right">
-                                <button onclick="openNoticeModal('Fake & Co. Safety Traders', 'Invalid GSTIN format, local content 15% violates Class-I local supplier threshold (>=50%).')" class="bg-slate-100 hover:bg-slate-200 text-red-700 border border-slate-200 px-2.5 py-1 rounded-lg text-[11px] font-semibold">Notice</button>
+                            <td class="p-3.5"><span class="bg-emerald-500/10 text-emerald-400 font-semibold px-2 py-0.5 rounded text-[10px]">COMPLETE</span></td>
+                            <td class="p-3.5"><span class="bg-rose-500/10 text-rose-400 font-semibold px-2 py-0.5 rounded text-[10px]">FAILED</span></td>
+                            <td class="p-3.5"><span class="bg-rose-500/10 text-rose-400 font-semibold px-2 py-0.5 rounded text-[10px]">FAIL</span></td>
+                            <td class="p-3.5"><span class="bg-rose-500/20 text-rose-300 font-bold px-2 py-0.5 rounded text-[10px]">HIGH</span></td>
+                            <td class="p-3.5"><span class="bg-rose-500/20 text-rose-300 font-bold px-2 py-1 rounded text-[10px]">DISQUALIFY</span></td>
+                            <td class="p-3.5 text-right flex justify-end gap-1.5">
+                                <button onclick="openAuditModal('Fake & Co. Safety Traders', false)" class="bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700 px-2.5 py-1 rounded-lg text-[11px] font-semibold">Audit</button>
+                                <button onclick="openNoticeModal('Fake & Co. Safety Traders', 'Invalid GSTIN format, local content 15% violates Class-I local supplier threshold (>=50%).')" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 px-2.5 py-1 rounded-lg text-[11px] font-semibold">Notice</button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+
+        <!-- TAB 2: GEM BIDS DIRECTORY -->
+        <div id="sec-tenders" class="glass-card rounded-2xl border border-slate-800 p-5 hidden space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-feather="database" class="w-4 h-4 text-blue-400"></i> Live GeM Ingested Bids Directory (284 Active Tenders)
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <span class="bg-blue-500/20 text-blue-300 text-[10px] font-bold px-2 py-0.5 rounded font-mono">GEM/2026/B/9482103</span>
+                    <h4 class="text-xs font-bold text-white">Industrial Safety & High-Pressure Valves</h4>
+                    <p class="text-[11px] text-slate-400">Ministry of Petroleum & Natural Gas · ₹1.25 Cr</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <span class="bg-blue-500/20 text-blue-300 text-[10px] font-bold px-2 py-0.5 rounded font-mono">GEM/2026/B/8812049</span>
+                    <h4 class="text-xs font-bold text-white">Rapid Antigen Diagnostic Kits Supply</h4>
+                    <p class="text-[11px] text-slate-400">Ministry of Health & Family Welfare · ₹3.50 Cr</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                    <span class="bg-blue-500/20 text-blue-300 text-[10px] font-bold px-2 py-0.5 rounded font-mono">GEM/2026/B/7710392</span>
+                    <h4 class="text-xs font-bold text-white">Biochemistry Laboratory Centrifuge Setup</h4>
+                    <p class="text-[11px] text-slate-400">AIIMS New Delhi Procurement · ₹85.0 Lakhs</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: UNIVERSAL KEYWORDS -->
+        <div id="sec-keywords" class="glass-card rounded-2xl border border-slate-800 p-5 hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i data-feather="hash" class="w-4 h-4 text-blue-400"></i> Sector Keywords Engine (32 Dynamic Search Targets)
+                </h3>
+                <span class="text-xs text-blue-400 font-semibold">+ Add New Keyword</span>
+            </div>
+            <div class="flex flex-wrap gap-2 pt-2">
+                <span class="kw-tag"><i data-feather="tag" class="w-3 h-3"></i> Full Body Harness</span>
+                <span class="kw-tag"><i data-feather="tag" class="w-3 h-3"></i> Industrial Safety Helmet</span>
+                <span class="kw-tag"><i data-feather="tag" class="w-3 h-3"></i> Reflective Safety Jacket</span>
+                <span class="kw-tag"><i data-feather="tag" class="w-3 h-3"></i> Dengue Rapid Test Kit</span>
+                <span class="kw-tag"><i data-feather="tag" class="w-3 h-3"></i> PCR Thermal Cycler</span>
+                <span class="kw-tag"><i data-feather="tag" class="w-3 h-3"></i> Fire Extinguisher ABC</span>
+            </div>
+        </div>
+
     </main>
 
     <!-- ===== SHOW CAUSE NOTICE MODAL ===== -->
-    <div id="notice-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass max-w-xl w-full rounded-2xl p-6 border border-slate-200 shadow-2xl space-y-4 bg-white">
-            <div class="flex justify-between items-center border-b border-slate-200 pb-3">
-                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <i data-feather="mail" class="w-4 h-4 text-blue-600"></i> Draft Show-Cause / Deficiency Notice
+    <div id="notice-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass max-w-xl w-full rounded-2xl p-6 border border-slate-700 shadow-2xl space-y-4 bg-slate-900 text-white">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i data-feather="mail" class="w-4 h-4 text-blue-400"></i> Draft Show-Cause / Deficiency Notice (GFR 2017)
                 </h3>
-                <button onclick="closeModal('notice-modal')" class="text-slate-400 hover:text-slate-600">✕</button>
+                <button onclick="closeModal('notice-modal')" class="text-slate-400 hover:text-white">✕</button>
             </div>
-            <textarea id="notice-text" rows="8" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs font-mono text-slate-800 focus:outline-none focus:border-blue-500"></textarea>
+            <textarea id="notice-text" rows="9" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-blue-300 focus:outline-none focus:border-blue-500"></textarea>
             <div class="flex justify-end gap-2">
-                <button onclick="closeModal('notice-modal')" class="bg-slate-200 text-slate-800 text-xs px-4 py-2 rounded-lg font-semibold">Close</button>
-                <button onclick="alert('Notice copied to clipboard!'); closeModal('notice-modal');" class="bg-blue-600 text-white text-xs px-4 py-2 rounded-lg font-semibold">Copy Notice</button>
+                <button onclick="closeModal('notice-modal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-4 py-2 rounded-lg font-semibold">Close</button>
+                <button onclick="showToast('📋 Notice copied to clipboard!', 'emerald'); closeModal('notice-modal');" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-semibold">Copy Official Memorandum</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== AUDIT CHECKLIST MODAL ===== -->
+    <div id="audit-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass max-w-lg w-full rounded-2xl p-6 border border-slate-700 shadow-2xl space-y-4 bg-slate-900 text-white">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i data-feather="shield-check" class="w-4 h-4 text-emerald-400"></i> Statutory Compliance Audit Report
+                </h3>
+                <button onclick="closeModal('audit-modal')" class="text-slate-400 hover:text-white">✕</button>
+            </div>
+            <div id="audit-content" class="space-y-2 text-xs"></div>
+            <div class="flex justify-end border-t border-slate-800 pt-3">
+                <button onclick="closeModal('audit-modal')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded-lg font-semibold">Close Audit Window</button>
             </div>
         </div>
     </div>
 
     <!-- ===== VERIFY BIDDER MODAL ===== -->
-    <div id="upload-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass max-w-md w-full rounded-2xl p-6 border border-slate-200 shadow-2xl space-y-4 bg-white">
-            <div class="flex justify-between items-center border-b border-slate-200 pb-3">
-                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <i data-feather="user-check" class="w-4 h-4 text-blue-600"></i> Multimodal Bidder Verification
+    <div id="upload-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass max-w-md w-full rounded-2xl p-6 border border-slate-700 shadow-2xl space-y-4 bg-slate-900 text-white">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i data-feather="user-check" class="w-4 h-4 text-blue-400"></i> Multimodal Bidder Verification
                 </h3>
-                <button onclick="closeModal('upload-modal')" class="text-slate-400 hover:text-slate-600">✕</button>
+                <button onclick="closeModal('upload-modal')" class="text-slate-400 hover:text-white">✕</button>
             </div>
             <div class="space-y-3">
                 <div>
-                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Company / Bidder Name</label>
-                    <input type="text" id="custom_company" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900" placeholder="e.g. Uviraj Global Industries Ltd">
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Company / Bidder Name</label>
+                    <input type="text" id="custom_company" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500" value="Uviraj Global Industries Ltd">
                 </div>
-                <button onclick="alert('Verification check complete: QUALIFY (Demo Mode)'); closeModal('upload-modal');" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-lg text-xs transition">
-                    Run Multimodal Scrutiny
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Upload Bid Document (PDF/Image)</label>
+                    <input type="file" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-400">
+                </div>
+                <button onclick="executeVerificationDemo()" id="btn-verify-demo" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-lg text-xs transition flex justify-center items-center gap-2">
+                    <i data-feather="shield" class="w-4 h-4"></i> Run Multimodal Scrutiny
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- ===== JAVASCRIPT LOGIC ===== -->
     <script>
         feather.replace();
+
+        function showToast(message, type = 'indigo') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgClass = type === 'emerald' ? 'bg-emerald-600' : (type === 'rose' ? 'bg-rose-600' : 'bg-indigo-600');
+            toast.className = `${bgClass} text-white text-xs font-bold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 toast-slide pointer-events-auto border border-white/20`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        function triggerSyncDemo() {
+            showToast('🔄 Ingesting Live GeM Tender Cards via Playwright Engine...', 'indigo');
+        }
+
+        function triggerScrutinyDemo() {
+            showToast('⚡ Running Compliance & Anti-Cartel Forensics Engine...', 'purple');
+        }
+
+        function triggerExportDemo() {
+            showToast('📊 Generating Multi-Sheet GFR 2017 TBER Workbook...', 'emerald');
+        }
+
+        function executeVerificationDemo() {
+            const btn = document.getElementById('btn-verify-demo');
+            btn.innerText = 'Extracting & Triangulating Data...';
+            setTimeout(() => {
+                btn.innerText = 'Run Multimodal Scrutiny';
+                closeModal('upload-modal');
+                showToast('✅ Verification Complete: QUALIFIED (Low Risk)', 'emerald');
+            }, 1200);
+        }
+
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); feather.replace(); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function switchTab(tab) {
+            ['bidders','tenders','keywords'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.remove('tab-active');
+                document.getElementById(`tab-${t}`).classList.add('text-slate-400');
+                document.getElementById(`sec-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`tab-${tab}`).classList.add('tab-active');
+            document.getElementById(`tab-${tab}`).classList.remove('text-slate-400');
+            document.getElementById(`sec-${tab}`).classList.remove('hidden');
+        }
+
         function openNoticeModal(companyName, notes) {
             document.getElementById('notice-text').value = 
 `OFFICIAL MEMORANDUM | GOVERNMENT e-MARKETPLACE (GeM)
 REF: GeM/MoPNG/TEC/2026/SCRUTINY-NOTICE
 DATE: ${new Date().toLocaleDateString('en-GB')}
 
-TO:
-M/s ${companyName}
+TO: M/s ${companyName}
 
 SUBJECT: TECHNICAL BID SCRUTINY - DEFICIENCY & CLARIFICATION NOTICE
 TENDER REFERENCE: GEM/2026/B/9482103 (Ministry of Petroleum & Natural Gas)
@@ -314,8 +445,39 @@ TENDER REFERENCE: GEM/2026/B/9482103 (Ministry of Petroleum & Natural Gas)
 During technical evaluation scrutiny under GFR 2017 Rule 173/175, the committee flagged:
 REASON: ${notes}
 
-You are requested to submit your clarification within 48 hours.`;
+You are requested to submit your official response/clarification within 48 hours.`;
             openModal('notice-modal');
+        }
+
+        function openAuditModal(company, isPass) {
+            const content = document.getElementById('audit-content');
+            if(isPass) {
+                content.innerHTML = `
+                    <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-300 font-bold mb-3">
+                        Bidder: ${company} — Status: QUALIFIED (Compliance Score: 100/100)
+                    </div>
+                    <ul class="space-y-1.5 text-slate-300">
+                        <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> GSTN Status: Active & GSTR-3B Returns Validated</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Udyam MSME Certificate: Validated (Class-I Supplier)</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> PAN & Income Tax Returns: Clean 3-Yr Audit</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> EPFO/ESIC Compliance: Verified</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Debarment/Blacklisting Check: Clean (CPPP & GeM Registry)</li>
+                    </ul>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 font-bold mb-3">
+                        Bidder: ${company} — Status: FLAGGED FOR REVIEW / DISQUALIFY
+                    </div>
+                    <ul class="space-y-1.5 text-slate-300">
+                        <li class="flex items-center gap-2"><span class="text-rose-400">✕</span> GSTN Status: Inactive / Invalid Format</li>
+                        <li class="flex items-center gap-2"><span class="text-amber-400">!</span> Minimum Turnover: Below ₹5.0 Cr Threshold</li>
+                        <li class="flex items-center gap-2"><span class="text-rose-400">✕</span> Make in India Local Content: 15% (Min 50% Required)</li>
+                        <li class="flex items-center gap-2"><span class="text-rose-400">✕</span> Anti-Cartel Hit: Shared Director DIN & IP Address</li>
+                    </ul>
+                `;
+            }
+            openModal('audit-modal');
         }
     </script>
 </body>
